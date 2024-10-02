@@ -1,0 +1,123 @@
+---
+
+- name: Ensure apt cache is up to date
+  apt:
+    update_cache: yes
+
+- name: Install build-essential and other dependencies
+  apt:
+    name:
+      - build-essential
+      - tcl
+    state: present
+
+- name: Ensure if redis is previously installed or not
+  stat:
+    path: "/usr/local/bin/redis-server"
+  register: redis_status
+
+- name: Ensure that the defined redis version is downloaded {{ redis_version }}
+  unarchive:
+    src: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+
+- name: Ensure the build time dependencies are met
+  make:
+    chdir: "/tmp/redis-{{ redis_version }}"
+  become: yes
+
+- name: Ensuring redis server is installed on the system
+  make:
+    chdir: "/tmp/redis-{{ redis_version }}"
+    target: install
+  become: yes
+
+- name: Ensure the tarballs and build directory is cleaned up
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/tmp/redis-{{ redis_version }}.tar.gz"
+    - "/tmp/redis-{{ redis_version }}"
+  become: yes
+
+- name: Ensuring that redis group exists in system
+  group:
+    name: "redis"
+    state: present
+  become: yes
+
+- name: Ensuring that redis user exists in system
+  user:
+    name: "redis"
+    group: "redis"
+    shell: /sbin/nologin
+    password: "!!"
+    createhome: no
+    system: yes
+    state: present
+  become: yes
+
+- name: Ensure the configuration directories are present
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: redis
+    group: redis
+  with_items:
+    - "{{ redis_log_dir }}"
+    - "{{ redis_data_dir }}"
+    - "{{ redis_conf_file_location }}"
+    - "{{ redis_cluster_config_dir }}"
+  become: yes
+
+- name: Ensure Redis cluster nodes.conf file exists
+  file:
+    path: /etc/redis/cluster/nodes.conf
+    state: touch
+    owner: redis
+    group: redis
+    mode: '0664'
+  become: yes    
+
+- name: Ensure that redis service exists on the system
+  template:
+    src: redis.service.j2
+    dest: "/etc/systemd/system/redis.service"
+  become: yes
+  notify:
+    - Ensure system daemon reloaded
+
+- name: Ensure the redis configuration is updated
+  template:
+    src: redis.conf.j2
+    dest: "{{ redis_conf_file_location }}/redis.conf"
+  become: yes
+  notify:
+    - Ensure redis service is running
+
+- name: Ensure that the defined redis version is downloaded {{ redis_version }}
+  unarchive:
+    src: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+
+- name: Ensuring redis server is installed on the system
+  make:
+    chdir: "/tmp/redis-{{ redis_version }}"
+    target: install
+  become: yes
+
+- name: Copy Redis configuration file
+  template:
+    src: redis.conf.j2
+    dest: "{{ redis_conf_dir }}/redis.conf"
+  notify: Restart Redis
+
+- name: Enable and start Redis service
+  service:
+    name: redis
+    state: started
+    enabled: yes

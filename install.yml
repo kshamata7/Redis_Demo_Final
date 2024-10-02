@@ -1,0 +1,6 @@
+---
+- name: Installing Redis
+  hosts: all
+  become: true
+  roles:
+    - my_redis_cluster_role
