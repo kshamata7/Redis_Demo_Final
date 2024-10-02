@@ -16,10 +16,10 @@
     state: absent
   become: true
 
-- name: Deploy Nginx configuration for Artifactory
+- name: Deploy Nginx configuration for Redis
   template:
     src: nginx.conf.j2
-    dest: /etc/nginx/sites-available/artifactory
+    dest: /etc/nginx/sites-available/redis
   become: true
 
 - name: Create symbolic link for Nginx configuration
