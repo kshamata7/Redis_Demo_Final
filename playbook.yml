@@ -9,4 +9,4 @@
 - hosts: Redis
   become: yes
   roles:
-    - my_redis_cluster_role
+    - redis_install
