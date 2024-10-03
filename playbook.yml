@@ -3,7 +3,7 @@
   become: true
   vars:
     bastionIp: "{{ lookup('file', '/var/lib/jenkins/workspace/Redis/terraform/bastion_ip.txt') }}"
-    jfrogIp: "{{ lookup('file', '/var/lib/jenkins/workspace/Redis/terraform/redis_ip.txt') }}"
+    redisIp: "{{ lookup('file', '/var/lib/jenkins/workspace/Redis/terraform/redis_ip.txt') }}"
   roles:
     - nginx
 - hosts: Redis
