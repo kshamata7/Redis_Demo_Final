@@ -4,7 +4,7 @@ server {
 
     # Proxy for the main Redis connection (if applicable)
     location / {
-        proxy_pass http://{{ redisIp }}:6379;  # Make sure Redis is configured to accept connections here
+        proxy_pass http://{{ redisIp }}:8081;  # Make sure Redis is configured to accept connections here
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -13,7 +13,7 @@ server {
 
     # Proxy for Redis UI
     location /ui {
-        proxy_pass http://{{ redisIp }}:6379;  # Ensure this is valid for your UI
+        proxy_pass http://{{ redisIp }}:8081;  # Ensure this is valid for your UI
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
