@@ -100,7 +100,7 @@ pipeline {
                             writeFile file: 'inventory', text: """
                             [bastion]
                             ${bastionIp} ansible_ssh_private_key_file=/var/lib/jenkins/DevPemKey.pem ansible_user=ubuntu
-                            [Jfrog]
+                            [Redis]
                             ${redisIp} ansible_ssh_private_key_file=/var/lib/jenkins/DevPemKey.pem ansible_user=ubuntu
                             """
 
