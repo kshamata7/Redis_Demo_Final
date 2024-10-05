@@ -11,6 +11,9 @@ pipeline {
     }
     stages {
         stage('Checkout') {
+             when {
+                expression { params.ACTION == 'apply' }
+            }
             steps {
                 // Check out the repository with Terraform code
                 git branch: 'main', 
@@ -31,6 +34,9 @@ pipeline {
             }
         }
         stage('Terraform Plan') {
+             when {
+                expression { params.ACTION == 'apply' }
+            }
             steps {
                 dir('terraform') {
                     sh 'terraform plan -lock=false'
@@ -38,6 +44,9 @@ pipeline {
             }
         }
         stage('Terraform Apply') {
+             when {
+                expression { params.ACTION == 'apply' }
+            }
             steps {
                 dir('terraform') {
                     sh '''
