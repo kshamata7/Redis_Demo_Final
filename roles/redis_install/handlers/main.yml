@@ -1,13 +1,6 @@
 ---
-
-- name: Ensure system daemon reloaded
-  systemd:
-    daemon_reload: yes
-  become: yes
-
-- name: Ensure redis service is running
-  systemd:
-    name: redis.service
-    enabled: yes
+# handlers file for redis_role
+- name: restart redis
+  service:
+    name: redis
     state: restarted
-  become: yes
