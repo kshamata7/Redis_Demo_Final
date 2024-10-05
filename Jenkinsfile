@@ -90,9 +90,9 @@ pipeline {
                 dir('terraform') {
                     // Checking if the output files exist before proceeding
                     script {
-                        // def bastionIpPath = "${env.WORKSPACE}/terraform/bastion_ip.txt"
-                        // def redisIpPath = "${env.WORKSPACE}/terraform/redis_ip.txt"
-                        // if (fileExists(bastionIpPath) && fileExists(redisIpPath)) {
+                        def bastionIpPath = "${env.WORKSPACE}/terraform/bastion_ip.txt"
+                        def redisIpPath = "${env.WORKSPACE}/terraform/redis_ip.txt"
+                        if (fileExists(bastionIpPath) && fileExists(redisIpPath)) {
                             def bastionIp = readFile(bastionIpPath).trim()
                             def redisIp = readFile(redisIpPath).trim()
 
@@ -113,9 +113,9 @@ pipeline {
                             sh '''
                             ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory /var/lib/jenkins/workspace/Redis/playbook.yml
                             '''
-                        // } else {
-                        //     error "One or both of the IP files (bastion_ip.txt, redis_ip.txt) were not found!"
-                        // }
+                        } else {
+                            error "One or both of the IP files (bastion_ip.txt, redis_ip.txt) were not found!"
+                        }
                     }
                 }
             }
