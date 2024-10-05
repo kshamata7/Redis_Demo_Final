@@ -1,3 +1,4 @@
+# Nginx restart
 - name: Restart Nginx
   systemd:
     name: nginx
